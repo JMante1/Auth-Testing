@@ -1,55 +1,79 @@
-from flask import Flask
+from calendar import c
+from lib2to3.pgen2 import token
+from flask import Flask, render_template, request
 
 
 app = Flask(__name__)
-
+acceptable_combos = {'user1':{'email': 'user@gmail.com', 'password':'abc'}, 'JaneDoe':{'email': 'jane@gmail.com', 'password':'123'}}
 
 @app.route("/status")
 def status():
-    return("The Authorisation Test Plugin Flask Server is up and running")
+    # to check the status
+    return("The Authorisation Testing Server is up and running")
 
 
-@app.route("/login", methods=["GET"])
-def login():
-    resp = {}
+@app.route('/login')
+def login_template():
+    # allows login via html form
+    return render_template('Login.html')
 
-    # ~~~~~~~~~~~~ REPLACE THIS SECTION WITH OWN RUN CODE ~~~~~~~~~~~~~~~~~~~
-    login_url = "www.examples.org/login"
-    login_data = {'email': '<email>', 'username':'<username>','password' : '<password>'}
-    login_headers = {'Accept': 'text/plain'}
-    login_params = {'email':{'type': 'email', 'description': 'This is the email used for login', 'options': [], 'default': [], 'restrictions': {}},
-                    'password': {'type': 'password', 'description': 'This is your password', 'options': [], 'default': [], 'restrictions': {}},
-                    'username': {'type': 'text', 'description': 'This is the username for yoru account', 'options': [], 'default': [], 'restrictions': {}}
-                   }
-    token_params = {'access':'access', 'refresh':'refresh'}
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~ END SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    resp['login_url'] = login_url
-    resp['login_data'] = login_data
-    resp['login_headers'] = login_headers
-    resp['login_parameters'] = login_params
-    resp['token_parameters'] = token_params
-    return resp
+@app.route('/loggedin', methods = ['POST'])
+def loggedin_template():
+    # shows that successfully logged in via frontend
+    usname = request.form['username']
+    email = request.form['email']
+    password = request.form['pwd']
 
-@app.route("/refresh", methods=["GET"])
-def refresh():
-    resp = {}
-
-    # ~~~~~~~~~~~~ REPLACE THIS SECTION WITH OWN RUN CODE ~~~~~~~~~~~~~~~~~~~
-    refresh_exists = True
-    login_url = "www.examples.org/refresh"
-    login_data = {'refresh':'<refresh>'}
-    login_headers = {}
-    refresh_token_name = 'refresh'
-    token_params = {'access':"access"}
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~ END SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    if refresh_exists:
-        resp['login_url'] = login_url
-        resp['login_data'] = login_data
-        resp['login_headers'] = login_headers
-        resp['refresh_token_name'] = refresh_token_name
-        resp['token_parameters'] = token_params
-        return resp
+    if usname in acceptable_combos:
+        if email == acceptable_combos[usname]['email'] and password == acceptable_combos[usname]['password']:
+            return render_template('Loggedin.html')
+        else:
+            return "The username and password/email don't match", 401
     else:
-        return 'This login does not provide refresh tokens', 503
+        return "The username doesn't exist", 401
+
+@app.route('/logout', methods=["POST"])
+def log_out():
+    # simulates logout via front end
+    return "successfully logged out", 200
+
+@app.route('/loggedinAPI', methods=['POST'])
+def loggedin_API_template():
+    # login via api
+    data = request.get_json(force=True)
+    email = data['email']
+    usname = data['username']
+    password = data['password']
+
+    if usname in acceptable_combos:
+        if email == acceptable_combos[usname]['email'] and password == acceptable_combos[usname]['password']:
+            login_token = 'logged_in'
+            refresh_token = 'send_this_to_refresh'
+            return {'login_token': login_token, 'refresh_token': refresh_token}
+        else:
+            return "The username and password/email don't match", 401
+    else:
+        return "The username doesn't exist", 401
+
+@app.route("/refresh", methods=["POST"])
+def refresh():
+    # refresh token via api
+    data = request.get_json(force=True)
+    refresh_token = data['refresh_token']
+
+    if refresh_token == 'send_this_to_refresh':
+         login_token = 'logged_in'
+         return {'login_token': login_token}
+    else:
+        return 'This refresh token is not valid', 401
+
+@app.route('/logoutAPI', methods=["POST"])
+def log_out_API():
+    # simulates logout via api
+    data = request.get_json(force=True)
+    login_token = data['login_token']
+    if login_token == 'logged_in':
+        return "successfully logged out", 200
+    else:
+        return "Invalid login token", 401
