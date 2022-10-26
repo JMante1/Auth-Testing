@@ -3,7 +3,7 @@ A server which is used for testing auth plugins. It allows login via a frontend 
 
 # Install
 ## Using docker
-Run `docker run --publish 8104:5000 --detach --name python-test-plug synbiohub/auth-testing:snapshot`
+Run `docker run --publish 8104:5000 --detach --name auth-testing synbiohub/auth-testing:snapshot`
 Check it is up using localhost:8101.  
 
 ## Using Python
