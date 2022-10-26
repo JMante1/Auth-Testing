@@ -1,5 +1,5 @@
 # Auth-Testing
-A server which is used for testing auth plugins. It allows login via a frontend or API and provides login and refresh tokens via the api.
+A server which is used for testing auth plugins. It allows login via a frontend or API and provides login and refresh tokens via the api. It works with the auth-test plugin found at: https://github.com/SynBioHub/Plugin-Auth-Test
 
 # Install
 ## Using docker
