@@ -1,9 +1,9 @@
-# Plugin-Visual-Test
-A very small test plugin to test the authorisation interface is working for SynBioHub. Could be the basis for other python based authorisation plugins. The plugin has a status and run endpoint. The run endpoint returns the format required for an API request to get an access token.
+# Auth-Testing
+A server which is used for testing auth plugins. It allows login via a frontend or API and provides login and refresh tokens via the api.
 
 # Install
 ## Using docker
-Run `docker run --publish 8101:5000 --detach --name python-test-plug synbiohub/plugin-auth-test:snapshot`
+Run `docker run --publish 8104:5000 --detach --name python-test-plug synbiohub/auth-testing:snapshot`
 Check it is up using localhost:8101.  
 
 ## Using Python
